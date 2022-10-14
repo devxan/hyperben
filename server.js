@@ -14,13 +14,28 @@ app.get('/computer', async (req, res) => {
     res.send(computer)
     return
   }
-  const resp = await axios.post('https://engine.hyperbeam.com/v0/vm', {}, {
-    headers: { 'Authorization': `Bearer ${process.env.HB_API_KEY}` }
-  })
+  const body = {
+    start_url: "https://discord.com/app",
+    // kiosk: false -> No need to include this key, as kiosk: false is the default
+    offline_timeout: 60, // I recommend just an offline timeout of 60 if you're using profiles
+    profile: {
+      load: `${process.env.SESSION_KEY}`,
+      save: true
+    },
+    ublock: true,
+    webgl: true,
+    fps: 30
+  }
+  const config = {
+    headers: { 
+      authorization: `Bearer ${process.env.HB_API_KEY}`,
+    }
+  }
+  const resp = await axios.post('https://engine.hyperbeam.com/v0/vm', body, config)
   computer = resp.data
   res.send(computer)
 })
 
 app.listen(8080, () => {
-  console.log('Server start at http://localhost:8080')
+  console.log('Server started at PORT :8080')
 })
